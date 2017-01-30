@@ -1,0 +1,27 @@
+datastore:
+  image: busybox:glibc
+  volumes:
+    - /tmp
+
+redis:
+  image: redis:latest
+  restart: always
+  command: redis-server --appendonly yes
+  ports:
+    - "6379:6379"
+  volumes_from:
+    - datastore
+
+hubot:
+  restart: always
+  build: containers/hubot
+  volumes:
+    - ./containers/hubot/scripts:/home/hubot/scripts
+    - /etc/localtime:/etc/localtime:ro
+  links:
+    - redis
+  env_file:
+    - hubot.env
+
+
+
